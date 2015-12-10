@@ -79,8 +79,7 @@ class MathJax_Parser {
    * The user can configure the extension by setting these variables in the LocalSettings.php file:
    */
   /// Use MathJax content delivery network (CDN) (the easy default) or set the URL to your own installation.
-    #  static $MathJaxJS       = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-  static $MathJaxJS       = 'http://www.m-wiki/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+  static $MathJaxJS; #     = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
   /// The MathJax configuration file to use, defaults to mwMathJaxConfig.js in extension directory.
   static $MathJaxConfig; #   = dirname(__FILE__) . "/mwMathJaxConfig.js"; // setting this default value in ParserInit.
   /// Disable the extension unless marked on the page to enable it __MATHJAX__ or disable by __NOMATHJAX__.
