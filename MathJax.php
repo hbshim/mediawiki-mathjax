@@ -75,41 +75,40 @@ $wgHooks['ParserFirstCallInit'][] = 'MathJax_Parser::ParserInit'; // register <n
 
 class MathJax_Parser {
 
-  /**
-   * The user can configure the extension by setting these variables in the LocalSettings.php file:
+  static $MathJaxJS; ///< Location of MathJax Engine
+
+  ///< To use MathJax content delivery network (CDN) (the easy default) 
+  ///< set 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' for the default
+
+  static $MathJaxConfig;   ///< Localtion of local MathJax config file
+
+  ///< to set this to the defaults, set
+  ///< dirname(__FILE__) . "/mwMathJaxConfig.js"
+
+  static $disabled        = false; ///< Disable the extension unless marked on the page to enable it "__MATHJAX__" or disable by "__NOMATHJAX__".
+  static $do_number       = true;  ///< Turn on or off numbering and "\eqref" linking by this extension, also by "__MATHJAX_NUMBER__" and "__MATHJAX_NONUMBER__".
+  static $do_dollar       = true;  ///< Turn on or off processing of inline math delimited by dollar sign: $...$. Also by "__MATHJAX_DOLLAR__" and "__MATHJAX_NODOLLAR__".
+  static $do_dollardollar = true;  ///< Turn on or off processing of display math delimetd by double dollar sign: $$...$$. Also by "__MATHJAX_DOLLARDOLLAR__" and "__MATHJAX_NODOLLARDOLLAR__".
+
+  static $ProtectTags = array('nowiki', 'pre', 'source', 'syntaxhighlight'); ///< these are stripped out by default
+  static $ProtectTags_special = array('code', 'nomathjax'); ///< these are not stripped out by default
+
+  static $tempstrip; ///< Variables for stripping formula's in stage 2
+  static $uniq_prefix; ///< Variables for stripping formula's in stage 2
+  static $postfix; ///< Variables for stripping formula's in stage 2 
+  static $strip_state = null; ///< Variables for stripping formula's in stage 2 
+
+  static $mark_n = 1; ///< Variables for numbering and resolving references at the end of stage 2 
+  static $eqnumbers = array(); ///< Variables for numbering and resolving references at the end of stage 2 
+  static $eqnumbers_rev = array(); ///< Variables for numbering and resolving references at the end of stage 2 
+  static $eqnumber = 1; ///< Variables for numbering and resolving references at the end of stage 2 
+  static $remembered_label; ///< Variables for numbering and resolving references at the end of stage 2 
+  static $label; ///< Variables for numbering and resolving references at the end of stage 2 
+
+  /** \brief set up hooks "<nomathjax>", "<code>" and other parser hooks for math processing and injection of the MathJax JavaScript.
+   *  @param[out] $parser
+   *  @param[in] $parser
    */
-  /// Use MathJax content delivery network (CDN) (the easy default) or set the URL to your own installation.
-  static $MathJaxJS; #     = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-  /// The MathJax configuration file to use, defaults to mwMathJaxConfig.js in extension directory.
-  static $MathJaxConfig; #   = dirname(__FILE__) . "/mwMathJaxConfig.js"; // setting this default value in ParserInit.
-  /// Disable the extension unless marked on the page to enable it __MATHJAX__ or disable by __NOMATHJAX__.
-  static $disabled        = false;
-  /// Turn on or off numbering and \eqref linking by this extension, also by __MATHJAX_NUMBER__ and __MATHJAX_NONUMBER__.
-  static $do_number       = true;
-  /// Turn on or off processing of inline math delimited by dollar sign: $...$. Also by __MATHJAX_DOLLAR__ and __MATHJAX_NODOLLAR__.
-  static $do_dollar       = true; 
-  /// Turn on or off processing of display math delimetd by double dollar sign: $$...$$. Also by __MATHJAX_DOLLARDOLLAR__ and __MATHJAX_NODOLLARDOLLAR__.
-  static $do_dollardollar = true;
-
-  // How to protect your normal wiki text:
-  static $ProtectTags = array('nowiki', 'pre', 'source', 'syntaxhighlight'); // these are stripped out by default
-  static $ProtectTags_special = array('code', 'nomathjax'); // these are not stripped out by default
-
-  // Variables for stripping formula's in stage 2
-  static $tempstrip;
-  static $uniq_prefix;
-  static $postfix;
-  static $strip_state = null;
-  // Variables for numbering and resolving references at the end of stage 2
-  static $mark_n = 1; 
-  static $eqnumbers = array();
-  static $eqnumbers_rev = array();
-  static $eqnumber = 1;
-  static $remembered_label;
-  static $label;
-
-  // setup hooks for <nomathjax> and <code> (because mw doesn't do this one)
-  // and set up other parser hooks for math processing and injection of the MathJax Javascript.
   static function ParserInit(Parser $parser)
   {
     $parser->setHook('nomathjax', 'MathJax_Parser::Render_NoMathJax');
@@ -121,7 +120,10 @@ class MathJax_Parser {
     return true;
   }
 
-  // handling of <nomathjax> tag
+  /** \brief handling of <nomathjax> tag
+   *
+   * The callback should have the following form: <code>function myParserHook( $text, $params, $parser, $frame ) { ... }</code>
+   */
   static function Render_NoMathJax($text, array $args, Parser $parser, PPFrame $frame)
   {
     // this is a no-op, we do nothing
@@ -173,7 +175,12 @@ class MathJax_Parser {
     return true;
   }
 
-  // helper for next function
+  /** \brief Remove certain tags
+   *
+   * @param[in] $text
+   * @param[in] $ConfigTag string value to be removed from $text
+   * @param[out] boolean true if removal ocurred and false otherwise
+   */
   static function LookForConfigTag(&$text, $ConfigTag)
   {
     $i = strpos($text, $ConfigTag);
