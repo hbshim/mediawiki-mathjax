@@ -1,0 +1,13 @@
+{
+    "name": "hbshim",
+    "AutoloadClasses": {
+        "MathJax_Parser": "MathJax.php"
+    },
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"MathJax_Parser::RunMathJax"
+		]
+	},
+    "type": "Tag extensions",
+	"manifest_version": 1
+}
