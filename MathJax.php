@@ -6,8 +6,8 @@ $wgHooks['ParserFirstCallInit'][] = 'MathJax_Parser::RunMathJax'; // register <s
 
 class MathJax_Parser {
      
-    static $MathJaxJS; ///< Location of MathJax Engine
-    static $MathJaxConfig;   ///< Localtion of local MathJax config file
+#static $MathJaxJS; ///< Location of MathJax Engine
+#static $MathJaxConfig;   ///< Localtion of local MathJax config file
     static $Markers; ///< Variables for stripping formula's in stage 2
     static $mark_n = 0; ///< Variables for numbering and resolving references at the end of stage 2 
 
@@ -22,10 +22,12 @@ class MathJax_Parser {
 
     static function Inject_JS($out)
     {
+        global $MathJaxJS;
+        global $MathJaxConfig;
         if(self::$mark_n == 0) return true; // there was no math detected so don't include the MathJax Javascript
-        $config = rtrim(file_get_contents(self::$MathJaxConfig)) . "\n//<![CDATA[\n" . "MathJax.Hub.config.tex2jax.inlineMath.push(['$','$']);\n" . "MathJax.Hub.config.tex2jax.displayMath.push(['$$','$$']);\n" . "//]]>\n";
+        $config = rtrim(file_get_contents($MathJaxConfig)) . "\n//<![CDATA[\n" . "MathJax.Hub.config.tex2jax.inlineMath.push(['$','$']);\n" . "MathJax.Hub.config.tex2jax.displayMath.push(['$$','$$']);\n" . "//]]>\n";
         $out->addScript("<script type='text/x-mathjax-config'>\n" . rtrim($config) . "\n</script>\n");
-        $out->addScript("<script type='application/javascript' src='" . self::$MathJaxJS . "'></script>\n");
+        $out->addScript("<script type='application/javascript' src='" . $MathJaxJS . "'></script>\n");
         return true;
     }
 
