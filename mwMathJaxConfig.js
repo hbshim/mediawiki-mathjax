@@ -1,5 +1,6 @@
 //<![CDATA[
 MathJax.Hub.Config({
+                   showMathMenu: false,
                    extensions: ["fp.js"],
                    tex2jax: {
                    inlineMath: [ /*['$','$'],*/ ["\\(","\\)"] ],
@@ -10,6 +11,7 @@ MathJax.Hub.Config({
                    skipTags: ["script","noscript","style","textarea","code"] /* removed pre as wikimedia renders math in there */
                    },
                    TeX: {
+                   equationNumbers: { autoNumber: "AMS" },
                    extensions: ["xypic.js"],
                    Macros: {
                    /* Wikipedia compatibility: these macros are used on Wikipedia */
