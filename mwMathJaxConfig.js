@@ -3,8 +3,8 @@ MathJax.Hub.Config({
                    showMathMenu: false,
                    extensions: ["fp.js"],
                    tex2jax: {
-                   inlineMath: [ /*['$','$'],*/ ["\\(","\\)"] ],
-                   displayMath: [ /*['$$','$$'],*/ ["\\[","\\]"] ],
+                   inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                   displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
                    processEscapes: false,
                    element: "content",
                    ignoreClass: "(tex2jax_ignore|mw-search-results|searchresults)", /* note: this is part of a regex, check the docs! */
@@ -173,4 +173,6 @@ MathJax.Hub.Config({
                    }
                    }
                    });
+
+MathJax.Ajax.loadComplete("http://dev.hbshim.net/mathjax/config/local/mwMathJaxConfig.js");
 //]]>
