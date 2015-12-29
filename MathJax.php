@@ -49,7 +49,7 @@ class MathJax_Parser {
     static function ReplaceByMarkers(Parser &$parser, &$text ) 
     {
         $text = preg_replace_callback('/(\$\$)(.*?)(\$\$)/s', 'MathJax_Parser::Marker', $text);
-        $text = preg_replace_callback('|[^{/\:](\$)(.*?)(\$)|s', 'MathJax_Parser::Marker', $text);
+        $text = preg_replace_callback('|^[{/\:](\$)(.*?)(\$)|s', 'MathJax_Parser::Marker', $text);
         $text = preg_replace_callback('/(\\\\\[)(.*?)(\\\\\])/s', 'MathJax_Parser::Marker', $text);
         $text = preg_replace_callback('/(\\\\\()(.*?)(\\\\\))/s', 'MathJax_Parser::Marker', $text);
         $text = preg_replace_callback('/(\\\begin{(?:.*?)})(.*?)(\\\end{(?:.*?)})/s', 'MathJax_Parser::Marker', $text);

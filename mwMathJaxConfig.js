@@ -18,19 +18,6 @@ MathJax.Hub.Config({
                    empty: '\\emptyset',
                    /* P: '\\unicode{xb6}',*/
                    Alpha: '\\unicode{x391}', /* FIXME: These capital Greeks don't show up in bold in \boldsymbol ... */
-                   Beta: '\\unicode{x392}',
-                   Epsilon: '\\unicode{x395}',
-                   Zeta: '\\unicode{x396}',
-                   Eta: '\\unicode{x397}',
-                   Iota: '\\unicode{x399}',
-                   Kappa: '\\unicode{x39a}',
-                   Mu: '\\unicode{x39c}',
-                   Nu: '\\unicode{x39d}',
-                   Pi: '\\unicode{x3a0}',
-                   Rho: '\\unicode{x3a1}',
-                   Sigma: '\\unicode{x3a3}',
-                   Tau: '\\unicode{x3a4}',
-                   Chi: '\\unicode{x3a7}',
                    C: '\\mathbb{C}',        /* the complex numbers */
                    N: '\\mathbb{N}',        /* the natural numbers */
                    Q: '\\mathbb{Q}',        /* the rational numbers */
@@ -174,5 +161,5 @@ MathJax.Hub.Config({
                    }
                    });
 
-MathJax.Ajax.loadComplete("http://dev.hbshim.net/mathjax/config/local/mwMathJaxConfig.js");
+MathJax.Ajax.loadComplete("http://wiki.hbshim.net/mathjax/config/local/mwMathJaxConfig.js");
 //]]>
