@@ -9,10 +9,10 @@ class MathJax_Parser {
     static $Markers; ///< Variables for stripping formula's in stage 2
     static $mark_n = 0; ///< Variables for numbering and resolving references at the end of stage 2 
     static $tempScript;
-    static $NoMathJaxMarkers;
 
     static function RunMathJax(Parser $parser)
     {
+        $parser->setHook( 'nomathjax' , 'MathJax_Parser::NoMathJax' );
         global $wgHooks;
         $wgHooks['ParserBeforeStrip'][] = 'MathJax_Parser::RemoveMathTags';
         $wgHooks['InternalParseBeforeLinks'][] = 'MathJax_Parser::ReplaceByMarkers';
@@ -25,6 +25,7 @@ class MathJax_Parser {
     {
         $text = preg_replace('|:\s*<math>(.*?)</math>|s', '\\[$1\\]', $text);
         $text = preg_replace('|<math>(.*?)</math>|s', '\\($1\\)', $text);
+        $text = preg_replace_callback('|(\\\\)(\$)|s', 'MathJax_Parser::Marker', $text);
         return true;
     }
 
@@ -45,28 +46,21 @@ class MathJax_Parser {
     }
 
 
-
     static function ReplaceByMarkers(Parser &$parser, &$text ) 
     {
-#        $text = preg_replace_callback('|<nomathjax>(.*?)</nomathjax>|s', 'MathJax_Parser::NoMathJax', $text);
-
         $text = preg_replace_callback('/(\$\$)(.*?)(\$\$)/s', 'MathJax_Parser::Marker', $text);
-        $text = preg_replace_callback('/(\$)(.*?)(\$)/s', 'MathJax_Parser::Marker', $text);
+        $text = preg_replace_callback('|[^{/\:](\$)(.*?)(\$)|s', 'MathJax_Parser::Marker', $text);
         $text = preg_replace_callback('/(\\\\\[)(.*?)(\\\\\])/s', 'MathJax_Parser::Marker', $text);
         $text = preg_replace_callback('/(\\\\\()(.*?)(\\\\\))/s', 'MathJax_Parser::Marker', $text);
         $text = preg_replace_callback('/(\\\begin{(?:.*?)})(.*?)(\\\end{(?:.*?)})/s', 'MathJax_Parser::Marker', $text);
 
-#        $text = preg_replace_callback('/' . Parser::MARKER_PREFIX . 'NoMathJax(?:.*?)' . Parser::MARKER_SUFFIX . '/s', 'MathJax_Parser::Test', $text);
-
         return true;
     }
 
-    static function NoMathJax($matches)
+    static function NoMathJax( $text, array $args, Parser $parser, PPFrame $frame )
     {
-        $marker = Parser::MARKER_PREFIX . 'NoMathJax' . ++self::$mark_n . Parser::MARKER_SUFFIX;
-        self::$NoMathJaxMarkers[$marker] = '<span class="tex2jax_ignore">' . $matches[1] . '</span>';
-
-        return $marker;
+        $output = $parser->recursiveTagParse($text, $frame);
+        return '<span class="tex2jax_ignore">' . $output . '</span>';
     }
 
     static function RemoveMarkers( Parser &$parser, &$text )
@@ -76,7 +70,6 @@ class MathJax_Parser {
         return true;
     }
 
-
     static function Test($matches)
     {
         return self::$Markers[$matches[0]];
@@ -85,14 +78,11 @@ class MathJax_Parser {
 
     static function Marker($matches)
     {
-        $eq = $matches[2];
-        $opening_delim = "$matches[1]";
-        $closing_delim = "$matches[3]";
-
-        $eq = "$opening_delim" . "$eq" . "$closing_delim";
         $marker = Parser::MARKER_PREFIX . 'MathJax' . ++self::$mark_n . Parser::MARKER_SUFFIX;
-
-        self::$Markers[$marker] = $eq;
+        if ($matches[1] . $matches[2] != '\\$') {
+            self::$Markers[$marker] = preg_replace_callback('/' . Parser::MARKER_PREFIX . 'MathJax(?:.*?)' . Parser::MARKER_SUFFIX . '/s', 'MathJax_Parser::Test', $matches[1] . $matches[2] . $matches[3]);
+        } else
+            self::$Markers[$marker] = $matches[1] . $matches[2];
 
         return $marker;
     }

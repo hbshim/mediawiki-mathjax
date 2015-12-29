@@ -5,10 +5,10 @@ MathJax.Hub.Config({
                    tex2jax: {
                    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
                    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-                   processEscapes: false,
+                   processEscapes: true,
                    element: "content",
                    ignoreClass: "(tex2jax_ignore|mw-search-results|searchresults)", /* note: this is part of a regex, check the docs! */
-                   skipTags: ["script","noscript","style","textarea","code"] /* removed pre as wikimedia renders math in there */
+                   skipTags: ["script","noscript","style","textarea","code"] 
                    },
                    TeX: {
                    equationNumbers: { autoNumber: "AMS" },
