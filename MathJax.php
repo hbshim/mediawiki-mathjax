@@ -90,6 +90,8 @@ class MathJax_Parser {
     {
         $marker = Parser::MARKER_PREFIX . 'MathJax' . ++self::$mark_n . Parser::MARKER_SUFFIX;
 
+        $matches[2] = str_replace('<', '&#60;', $matches[2]);
+        $matches[2] = str_replace('>', '&#62;', $matches[2]);
         self::$Markers[$marker] =  $matches[1] . $matches[2] . $matches[3];
 
         return $marker;
